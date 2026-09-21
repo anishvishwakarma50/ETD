@@ -123,9 +123,11 @@ a {
     top: 0;
     left: 0;
     width: 100%;
-    background-color: transparent;
+    background-color: #1717173b;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     z-index: 1000;
-    border-bottom: 1px solid transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding: 20px 0;
     transition: all 0.5s ease;
 }
@@ -151,7 +153,8 @@ a {
 .logo img {
     height: 45px;
     transition: transform 0.3s ease, filter 0.3s ease;
-    filter: brightness(0) invert(1);
+    /* CSS filter equivalent for #FF6600 (var(--color-orange)) */
+    filter: brightness(0) saturate(100%) invert(49%) sepia(97%) saturate(3015%) hue-rotate(9deg) brightness(102%) contrast(104%);
 }
 
 .header.scrolled .logo img {
@@ -170,7 +173,7 @@ a {
 .nav a {
     font-size: 0.85rem;
     font-weight: 700;
-    color: var(--color-text-light);
+    color: var(--color-orange);
     text-transform: uppercase;
     position: relative;
     letter-spacing: 0.5px;
@@ -200,6 +203,45 @@ a {
     color: var(--color-orange);
 }
 
+/* Hamburger Menu */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 20px;
+    cursor: pointer;
+    z-index: 1005;
+    /* Above nav */
+}
+
+.hamburger span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background-color: var(--color-orange);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.header.scrolled .hamburger span {
+    background-color: var(--color-text-dark);
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: translateY(8.5px) rotate(45deg);
+    background-color: var(--color-text-dark);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: translateY(-8.5px) rotate(-45deg);
+    background-color: var(--color-text-dark);
+}
+
 /* Hero Section */
 .hero {
     position: relative;
@@ -209,7 +251,7 @@ a {
     align-items: center;
     justify-content: flex-start;
     overflow: hidden;
-    margin-top: 0;
+    margin-top: 5.5rem;
 }
 
 .hero-video {
@@ -263,6 +305,21 @@ a {
     padding-top: 100px;
 }
 
+.intro-header {
+    margin-bottom: 20px;
+}
+
+.intro-title {
+    margin-bottom: 10px;
+    font-size: 3.5rem;
+}
+
+.intro-subtitle {
+    font-size: 1.8rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+}
+
 .intro-grid {
     display: grid;
     grid-template-columns: 1.2fr 1fr;
@@ -309,6 +366,13 @@ a {
     text-align: center;
     overflow: hidden;
     /* margin: 20px 0; */
+}
+
+.svg-divider {
+    width: 100%;
+    height: 240px;
+    display: block;
+    overflow: visible;
 }
 
 .divider img {
@@ -463,25 +527,15 @@ a {
 .deep-thinkers {
     background-image: url('assets/blue-bulb-image.jpeg');
     background-size: cover;
-    background-position: center;
+    background-position: center bottom;
     color: white;
     position: relative;
-}
-
-.deep-thinkers::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, rgba(10, 28, 106, 0.95) 0%, rgba(10, 28, 106, 0.6) 100%);
 }
 
 .deep-thinkers .container {
     position: relative;
     z-index: 1;
-    padding: 0rem 0rem 10rem 0rem;
+    padding: 2rem 0rem 34vw 0rem;
 
 }
 
@@ -492,13 +546,14 @@ a {
 }
 
 .deep-thinkers-text {
-    max-width: 700px;
+    max-width: 600px;
 }
 
 .deep-thinkers-text p {
     font-size: 1.2rem;
     font-weight: 400;
-    width: 75%;
+    width: 85%;
+    line-height: 1.5;
 }
 
 /* Core Team */
@@ -692,23 +747,34 @@ a {
     z-index: 1;
     font-family: var(--font-heading);
     line-height: 1;
-    margin-top: -4vw; /* Pull up to remove empty space above lowercase letters */
+    margin-top: -4vw;
+    /* Pull up to remove empty space above lowercase letters */
     text-align: center;
 }
 
 /* Responsive adjustments */
 @media (max-width: 900px) {
+    .footer-top-row {
+        flex-direction: column;
+    }
+
+    .footer-bg-image {
+        display: none;
+    }
+
     .footer-text-box {
         width: 100%;
         min-width: 0;
-        padding-bottom: 120px;
+        padding-bottom: 250px;
+        border-radius: 0;
     }
 
     .footer-glass-box {
         left: 5%;
         width: 90%;
         flex-direction: column;
-        top: 70%;
+        top: auto;
+        bottom: 50px;
         text-align: center;
     }
 
@@ -775,23 +841,133 @@ a {
 }
 
 @media (max-width: 768px) {
+    .section-padding {
+        padding: 40px 0;
+    }
+
+    .section-title {
+        font-size: 2.2rem;
+    }
+
+    .svg-divider {
+        height: 120px;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
+    .header-container {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0;
+    }
+
+    .nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 100%;
+        height: 100vh;
+        background-color: rgba(255, 255, 255, 0.98);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: right 0.4s ease;
+        z-index: 1002;
+        backdrop-filter: blur(10px);
+    }
+
+    .nav.active {
+        right: 0;
+    }
+
+    .nav a {
+        color: var(--color-text-dark);
+        font-size: 1.5rem;
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .intro-title {
+        font-size: 2.2rem;
+    }
+
+    .intro-subtitle {
+        font-size: 1.2rem;
+    }
+
+    .intro-text p {
+        font-size: 1.1rem;
+    }
+
+    .blue-banner {
+        padding: 20px;
+        font-size: 1rem;
+    }
+
+    .solve-box {
+        padding: 40px 0;
+    }
+
+    .solve-box h3 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+
     .solve-grid {
         grid-template-columns: 1fr;
     }
 
-    .header-container {
-        flex-direction: column;
-        gap: 15px;
+    .solve-grid li {
+        font-size: 1rem;
     }
 
-    .nav {
-        gap: 15px;
-        flex-wrap: wrap;
-        justify-content: center;
+    .partner-text .section-title {
+        text-align: center;
     }
 
-    .hero h1 {
-        font-size: 2.2rem;
+    .big-sub-title {
+        font-size: 1.2rem;
+        text-align: center;
+    }
+
+    .custom-bullets li {
+        font-size: 1.1rem;
+    }
+
+    .btn-center {
+        margin: 0 auto;
+        display: block;
+        width: fit-content;
+    }
+
+    .not-consultants .text-content {
+        font-size: 1.1rem;
+    }
+
+    .deep-thinkers {
+        background-position: left bottom;
+    }
+
+    .deep-thinkers .container {
+        padding: 2rem 0rem 90vw 0rem;
+    }
+
+    .deep-thinkers .section-title {
+        font-size: 1.8rem;
+    }
+
+    .deep-thinkers-text p {
+        width: 100%;
+        font-size: 1.1rem;
+    }
+
+    .footer-text-box h2 {
+        font-size: 1.2rem;
     }
 
     .footer-card {
