@@ -15,16 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
             header.classList.remove('scrolled');
         }
 
-        // Hide/Show logic
-        if (currentScrollY > lastScrollY && currentScrollY > 150) {
-            // Scrolling down and past 150px
-            header.classList.add('hidden');
-        } else {
-            // Scrolling up
-            header.classList.remove('hidden');
+        // Hide/Show logic with a threshold to prevent jitter
+        if (Math.abs(currentScrollY - lastScrollY) > 10) {
+            if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                // Scrolling down and past the top area
+                header.classList.add('hidden');
+            } else if (currentScrollY < lastScrollY) {
+                // Scrolling up
+                header.classList.remove('hidden');
+            }
+            lastScrollY = currentScrollY;
         }
-        
-        lastScrollY = currentScrollY;
     });
 
     // --- Mobile Menu Toggle ---
@@ -92,4 +93,80 @@ document.addEventListener('DOMContentLoaded', () => {
     revealElements.forEach(el => {
         revealOnScroll.observe(el);
     });
+    // --- Team Member Modal Logic ---
+    const teamMembers = document.querySelectorAll('.team-member');
+    const modal = document.getElementById('team-modal');
+    const modalClose = document.querySelector('.modal-close');
+    const knowMoreBtn = document.querySelector('.know-more');
+    
+    if (modal && teamMembers.length > 0) {
+        const modalImg = document.getElementById('modal-image');
+        const modalName = document.getElementById('modal-name');
+        const modalRole = document.getElementById('modal-role');
+        const modalBio = document.getElementById('modal-bio');
+        const modalLinkedin = document.getElementById('modal-linkedin');
+        const modalEmail = document.getElementById('modal-email');
+        
+        teamMembers.forEach(member => {
+            member.style.cursor = 'pointer';
+            
+            member.addEventListener('click', () => {
+                // Reset states
+                modalBio.classList.remove('scrollable');
+                if (knowMoreBtn) knowMoreBtn.style.display = 'block';
+                
+                // Populate data
+                modalImg.src = member.dataset.image || '';
+                modalName.textContent = member.dataset.name || '';
+                modalRole.textContent = member.dataset.role || '';
+                modalBio.textContent = member.dataset.bio || '';
+                modalLinkedin.href = member.dataset.linkedin || '#';
+                modalEmail.href = member.dataset.email || '#';
+                
+                // Show modal
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden'; // prevent scrolling behind modal
+                
+                // Check if content exceeds container height after rendering
+                setTimeout(() => {
+                    if (knowMoreBtn) {
+                        if (modalBio.scrollHeight > modalBio.clientHeight) {
+                            knowMoreBtn.style.display = 'block';
+                        } else {
+                            knowMoreBtn.style.display = 'none';
+                        }
+                    }
+                }, 50);
+            });
+        });
+        
+        if (knowMoreBtn) {
+            knowMoreBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                modalBio.classList.add('scrollable');
+                knowMoreBtn.style.display = 'none';
+            });
+        }
+        
+        // Close modal handlers
+        const closeModal = () => {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        };
+        
+        modalClose.addEventListener('click', closeModal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+        
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+    }
 });
