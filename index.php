@@ -1,3 +1,8 @@
+<?php
+require_once __DIR__ . '/db.php';
+$settings = $pdo->query("SELECT key, value FROM settings")->fetchAll(PDO::FETCH_KEY_PAIR);
+$partners = $pdo->query("SELECT * FROM partners ORDER BY display_order ASC, id ASC")->fetchAll();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -40,8 +45,8 @@
     <!-- Hero Section -->
     <section class="hero">
         <video autoplay muted loop playsinline class="hero-video">
-            <source src="assets/hero-portrait.mp4" media="(max-aspect-ratio: 1/1)" type="video/mp4">
-            <source src="assets/v2.mp4" type="video/mp4">
+            <source src="<?= htmlspecialchars($settings['hero_video_portrait'] ?? '') ?>" media="(max-aspect-ratio: 1/1)" type="video/mp4">
+            <source src="<?= htmlspecialchars($settings['hero_video_landscape'] ?? '') ?>" type="video/mp4">
         </video>
         <div class="hero-overlay"></div>
         <div class="container hero-content">
@@ -435,42 +440,25 @@
             <p class="subtitle font-outfit">Mentors, Thinker-Doers, Deep-Diving Experts<br>And Master Implementers.</p>
 
             <div class="team-grid top-row reveal">
+                <?php foreach ($partners as $partner): ?>
                 <div class="team-member" 
-                    data-name="T.I.G.E.R. SANTOSH NAIR" 
-                    data-role="MENTOR AND TRANSFORMATION EXPERT" 
-                    data-bio="T.I.G.E.R. Santosh Nair is one of India’s most inspiring Business Transformation Coaches and the visionary behind smmart Training & Consultancy Services and the Santosh Nair Online Academy (SNOA). With over four decades of experience, he has impacted the lives of more than 30 lakh individuals, guided over 4,000 entrepreneurs, and transformed 700+ organizations across India and abroad. His forte lies in instilling the roots of transformation in the psyche of individuals and organizations, carving out a unique niche in this field. Known for his fearless energy, sharp insights, and futuristic approach, T.I.G.E.R. Santosh Nair empowers individuals to become self-led, high-performance leaders. At the heart of his work is a powerful mission, to build a bold new future for Indian enterprise, driven by visionary minds and unstoppable action." 
-                    data-image="assets/TM1.jpg" 
-                    data-linkedin="https://linkedin.com" 
-                    data-email="mailto:santosh@smmart.in">
-                    <img src="assets/TM1.jpg" alt="T.I.G.E.R. Santosh Nair">
+                    data-name="<?= htmlspecialchars($partner['name']) ?>" 
+                    data-role="<?= htmlspecialchars($partner['role']) ?>" 
+                    data-bio="<?= htmlspecialchars($partner['bio']) ?>" 
+                    data-image="<?= htmlspecialchars($partner['image']) ?>" 
+                    data-linkedin="<?= htmlspecialchars($partner['linkedin'] ?? '#') ?>" 
+                    data-email="<?= htmlspecialchars($partner['email'] ?? '#') ?>">
+                    
+                    <?php if ($partner['image']): ?>
+                        <img src="<?= htmlspecialchars($partner['image']) ?>" alt="<?= htmlspecialchars($partner['name']) ?>">
+                    <?php else: ?>
+                        <!-- Fallback placeholder if no image -->
+                        <div style="width: 100%; height: 100%; background: #ccc; display: flex; align-items: center; justify-content: center; color: #666; font-weight: bold; font-size: 1.5rem;">
+                            <?= substr(htmlspecialchars($partner['name']), 0, 1) ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
-                <div class="team-member" 
-                    data-name="PRITAM SAVE" 
-                    data-role="VICE PRESIDENT - ENTERPRISE TRANSFORMATION" 
-                    data-bio="Pritam Save is a Vice President, Enterprise Transformation with over 14 years of experience leading enterprise-wide change, business scale-up initiatives, and execution-led transformation across complex, multi-location organizations. He operates at the intersection of enterprise strategy, operating model design, and performance execution supporting organizations in converting strategic priorities into sustained business outcomes. His work spans business and revenue model optimization, sales and marketing effectiveness, organizational effectiveness, and process reengineering, delivering measurable improvements in growth, productivity, and return on investment. Pritam brings strong expertise in enterprise diagnostics, transformation roadmap design, and execution governance, ensuring clarity of priorities, disciplined execution, and outcome ownership. He is recognized for building alignment across leadership teams, embedding robust performance management and review mechanisms, and leading teams through ambiguity and change with structure and intent. A hands-on yet strategic leader, he develops internal leadership capability, strengthens decision-making through data and insights, and institutionalizes scalable systems and processes that enable long-term enterprise value creation." 
-                    data-image="assets/TM2.jpg" 
-                    data-linkedin="https://linkedin.com" 
-                    data-email="mailto:pritam@smmart.in">
-                    <img src="assets/TM2.jpg" alt="Pritam Save">
-                </div>
-                <div class="team-member" 
-                    data-name="GEETA NAIDU KHAN" 
-                    data-role="VICE PRESIDENT - ENTERPRISE TRANSFORMATION EXECUTION" 
-                    data-bio="Result-oriented, Award-winning Customer Experience Leader with over 16 Years of Experience in BFSI, Travel & Hospitality. Proven Expertise in Setting up Back-office Operations, Building Service Frameworks, Driving SLAs, and Managing Large Teams across Global Markets. Known for Strategic Thinking, People Leadership, Process Innovation, and Consistently Exceeding Customer and Stakeholder Expectations." 
-                    data-image="assets/TM3.jpg" 
-                    data-linkedin="https://linkedin.com" 
-                    data-email="mailto:geeta@smmart.in">
-                    <img src="assets/TM3.jpg" alt="Geeta Naidu Khan">
-                </div>
-                <div class="team-member" 
-                    data-name="JANHAVI BHAVKE" 
-                    data-role="SYSTEMS AUDITOR & TECHNOLOGY ENABLER" 
-                    data-bio="Janhavi leads organizational diagnostic and research projects at smmart, and drives stakeholder alignment. She is proficient in coordinating product/process innovation projects, research studies, and software delivery from concept to execution. She specializes in converting raw research and data analysis into clear, actionable insights through client-ready reports and presentations for senior management." 
-                    data-image="assets/TM5.jpeg" 
-                    data-linkedin="https://linkedin.com" 
-                    data-email="mailto:janhavi@smmart.in">
-                    <img src="assets/TM5.jpeg" alt="Janhavi Bhavke">
-                </div>
+                <?php endforeach; ?>
             </div>
             <!-- <div class="team-grid bottom-row reveal">
 

@@ -51,7 +51,27 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             const targetId = this.getAttribute('href');
-            if(targetId === '#') return;
+            if (targetId === '#') return;
+            
+            // Show coming soon toast for specific links
+            if (targetId === '#practices' || targetId === '#testimonials') {
+                e.preventDefault();
+                let toast = document.getElementById('coming-soon-toast');
+                if (!toast) {
+                    toast = document.createElement('div');
+                    toast.id = 'coming-soon-toast';
+                    toast.className = 'toast';
+                    toast.textContent = 'Coming Soon';
+                    document.body.appendChild(toast);
+                }
+                
+                toast.classList.remove('show');
+                void toast.offsetWidth; // trigger reflow
+                toast.classList.add('show');
+                
+                setTimeout(() => toast.classList.remove('show'), 3000);
+                return;
+            }
             
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
