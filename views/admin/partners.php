@@ -1,74 +1,5 @@
-<?php
-require_once __DIR__ . '/header.php';
-
-$msg = '';
-$msg_type = '';
-$upload_dir = __DIR__ . '/../uploads/';
-
-// Handle Deletion
-if (isset($_GET['delete'])) {
-    $id = (int)$_GET['delete'];
-    $pdo->prepare("DELETE FROM partners WHERE id = ?")->execute([$id]);
-    header("Location: partners.php?msg=deleted");
-    exit;
-}
-
-if (isset($_GET['msg']) && $_GET['msg'] === 'deleted') {
-    $msg = "Partner deleted successfully.";
-    $msg_type = "success";
-}
-if (isset($_GET['msg']) && $_GET['msg'] === 'saved') {
-    $msg = "Partner saved successfully.";
-    $msg_type = "success";
-}
-
-// Handle Add/Edit Form Submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id = $_POST['id'] ?? 0;
-    $name = $_POST['name'] ?? '';
-    $role = $_POST['role'] ?? '';
-    $bio = $_POST['bio'] ?? '';
-    $linkedin = $_POST['linkedin'] ?? '';
-    $email = $_POST['email'] ?? '';
-    $display_order = (int)($_POST['display_order'] ?? 0);
-    
-    // Handle Image Upload
-    $image_path = $_POST['existing_image'] ?? '';
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $tmp_name = $_FILES['image']['tmp_name'];
-        $filename = time() . '_' . preg_replace("/[^a-zA-Z0-9\.]/", "", basename($_FILES['image']['name']));
-        if (move_uploaded_file($tmp_name, $upload_dir . $filename)) {
-            $image_path = 'uploads/' . $filename;
-        }
-    }
-    
-    if ($id) {
-        // Update
-        $stmt = $pdo->prepare("UPDATE partners SET name=?, role=?, bio=?, image=?, linkedin=?, email=?, display_order=? WHERE id=?");
-        $stmt->execute([$name, $role, $bio, $image_path, $linkedin, $email, $display_order, $id]);
-    } else {
-        // Insert
-        $stmt = $pdo->prepare("INSERT INTO partners (name, role, bio, image, linkedin, email, display_order) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$name, $role, $bio, $image_path, $linkedin, $email, $display_order]);
-    }
-    
-    header("Location: partners.php?msg=saved");
-    exit;
-}
-
-$action = $_GET['action'] ?? 'list';
-$edit_id = $_GET['id'] ?? 0;
-
-if ($action === 'edit' || $action === 'add') {
-    $partner = [
-        'id' => '', 'name' => '', 'role' => '', 'bio' => '', 'image' => '', 'linkedin' => '', 'email' => '', 'display_order' => '0'
-    ];
-    if ($edit_id) {
-        $stmt = $pdo->prepare("SELECT * FROM partners WHERE id = ?");
-        $stmt->execute([$edit_id]);
-        $partner = $stmt->fetch() ?: $partner;
-    }
-?>
+<?php require_once __DIR__ . '/header.php'; ?>
+<?php if ($action === 'edit' || $action === 'add'): ?>
     <h1><?= $edit_id ? 'Edit' : 'Add' ?> Partner</h1>
     <a href="partners.php" class="btn" style="margin-bottom: 20px;">&larr; Back to List</a>
     <div class="card">
@@ -112,11 +43,7 @@ if ($action === 'edit' || $action === 'add') {
             <button type="submit" class="btn">Save Partner</button>
         </form>
     </div>
-<?php
-} else {
-    // List View
-    $partners = $pdo->query("SELECT * FROM partners ORDER BY display_order ASC, id ASC")->fetchAll();
-?>
+<?php else: ?>
     <h1>Manage Partners</h1>
     <?php if ($msg): ?>
         <div class="alert alert-<?= $msg_type ?>"><?= htmlspecialchars($msg) ?></div>
@@ -163,8 +90,5 @@ if ($action === 'edit' || $action === 'add') {
             </tbody>
         </table>
     </div>
-<?php
-}
-
-require_once __DIR__ . '/footer.php';
-?>
+<?php endif; ?>
+<?php require_once __DIR__ . '/footer.php'; ?>

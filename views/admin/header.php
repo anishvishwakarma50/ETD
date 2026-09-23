@@ -1,4 +1,3 @@
-<?php require_once __DIR__ . '/auth.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,11 +33,11 @@
 <body>
     <div class="sidebar">
         <h2>Admin Panel</h2>
-        <a href="index.php">Dashboard</a>
-        <a href="partners.php">Manage Partners</a>
-        <a href="settings.php">Hero Section Settings</a>
-        <a href="users.php">Manage Admins</a>
-        <a href="logout.php">Logout</a>
-        <a href="../index.php" target="_blank" style="background:#ea580c; color:#fff; text-align:center; border:none; margin-top:20px;">View Live Site &rarr;</a>
+        <a href="/admin/dashboard">Dashboard</a>
+        <a href="/admin/partners">Manage Partners</a>
+        <a href="/admin/settings">Hero Section Settings</a>
+        <a href="/admin/users">Manage Admins</a>
+        <a href="/admin/logout">Logout</a>
+        <a href="/" target="_blank" style="background:#ea580c; color:#fff; text-align:center; border:none; margin-top:20px;">View Live Site &rarr;</a>
     </div>
     <div class="main-content">

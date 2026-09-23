@@ -1,40 +1,4 @@
-<?php
-require_once __DIR__ . '/header.php';
-
-$msg = '';
-$msg_type = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['action']) && $_POST['action'] === 'add') {
-        $username = trim($_POST['username'] ?? '');
-        $password = $_POST['password'] ?? '';
-        if ($username && $password) {
-            try {
-                $stmt = $pdo->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-                $stmt->execute([$username, password_hash($password, PASSWORD_DEFAULT)]);
-                $msg = "User added successfully.";
-                $msg_type = "success";
-            } catch (Exception $e) {
-                $msg = "Error adding user. That username might already exist.";
-                $msg_type = "error";
-            }
-        }
-    } elseif (isset($_POST['action']) && $_POST['action'] === 'delete') {
-        $id = $_POST['id'] ?? 0;
-        if ($id != $_SESSION['admin_id']) { // Prevent deleting self
-            $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
-            $stmt->execute([$id]);
-            $msg = "User deleted successfully.";
-            $msg_type = "success";
-        } else {
-            $msg = "You cannot delete your own account while logged in.";
-            $msg_type = "error";
-        }
-    }
-}
-
-$users = $pdo->query("SELECT id, username, created_at FROM users ORDER BY created_at DESC")->fetchAll();
-?>
+<?php require_once __DIR__ . '/header.php'; ?>
 
 <h1>Manage Admin Users</h1>
 
