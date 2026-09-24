@@ -155,29 +155,56 @@ $app->group('/admin', function() use ($app, $pdo) {
         $upload_dir = __DIR__ . '/uploads/';
         
         $uploadVideo = function($fileKey, $settingKey) use ($pdo, $upload_dir) {
-            if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
-                $tmp_name = $_FILES[$fileKey]['tmp_name'];
-                $name = basename($_FILES[$fileKey]['name']);
-                $new_name = time() . '_' . preg_replace("/[^a-zA-Z0-9\.]/", "", $name);
-                $target_file = $upload_dir . $new_name;
-                
-                if (move_uploaded_file($tmp_name, $target_file)) {
-                    $db_path = 'uploads/' . $new_name;
-                    $stmt = $pdo->prepare("UPDATE settings SET value = ? WHERE key = ?");
-                    $stmt->execute([$db_path, $settingKey]);
-                    return true;
+            if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] !== UPLOAD_ERR_NO_FILE) {
+                if ($_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                    $tmp_name = $_FILES[$fileKey]['tmp_name'];
+                    $name = basename($_FILES[$fileKey]['name']);
+                    $new_name = time() . '_' . preg_replace("/[^a-zA-Z0-9\.]/", "", $name);
+                    $target_file = $upload_dir . $new_name;
+                    
+                    if (move_uploaded_file($tmp_name, $target_file)) {
+                        $db_path = 'uploads/' . $new_name;
+                        $stmt = $pdo->prepare("UPDATE settings SET value = ? WHERE key = ?");
+                        $stmt->execute([$db_path, $settingKey]);
+                        return ['success' => true];
+                    } else {
+                        return ['success' => false, 'error' => "Failed to move uploaded file."];
+                    }
+                } else {
+                    $errorMsg = "Upload error code: " . $_FILES[$fileKey]['error'];
+                    if ($_FILES[$fileKey]['error'] == UPLOAD_ERR_INI_SIZE || $_FILES[$fileKey]['error'] == UPLOAD_ERR_FORM_SIZE) {
+                        $errorMsg = "File is too large. It exceeds the PHP upload_max_filesize directive.";
+                    }
+                    return ['success' => false, 'error' => $errorMsg];
                 }
             }
-            return false;
+            return null;
         };
 
         $uploadedAny = false;
-        if ($uploadVideo('portrait_video', 'hero_video_portrait')) $uploadedAny = true;
-        if ($uploadVideo('landscape_video', 'hero_video_landscape')) $uploadedAny = true;
+        $errors = [];
         
-        if ($uploadedAny) {
+        $portraitRes = $uploadVideo('portrait_video', 'hero_video_portrait');
+        if ($portraitRes !== null) {
+            if ($portraitRes['success']) $uploadedAny = true;
+            else $errors[] = "Portrait Video: " . $portraitRes['error'];
+        }
+        
+        $landscapeRes = $uploadVideo('landscape_video', 'hero_video_landscape');
+        if ($landscapeRes !== null) {
+            if ($landscapeRes['success']) $uploadedAny = true;
+            else $errors[] = "Landscape Video: " . $landscapeRes['error'];
+        }
+        
+        if ($uploadedAny && empty($errors)) {
             $msg = "Videos updated successfully!";
             $msg_type = "success";
+        } elseif (!empty($errors)) {
+            $msg = implode("<br>", $errors);
+            if ($uploadedAny) {
+                $msg = "Some videos uploaded successfully, but there were errors:<br>" . $msg;
+            }
+            $msg_type = "error";
         } else {
             $msg = "No valid video files uploaded.";
             $msg_type = "error";
