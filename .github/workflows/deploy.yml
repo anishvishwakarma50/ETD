@@ -30,5 +30,5 @@ jobs:
           # Note: --rsync-path="sudo rsync" is used because /var/www/html is owned by apache
           rsync -avz --exclude='.git' --exclude='.github' -e "ssh -i ~/.ssh/id_rsa" --rsync-path="sudo rsync" ./ $USER@$HOST:/var/www/html/
           
-          # Ensure correct permissions are set on the server after upload
-          ssh -i ~/.ssh/id_rsa $USER@$HOST "sudo chown -R apache:apache /var/www/html && sudo chmod 664 /var/www/html/data.sqlite"
+          # Ensure correct permissions and clear cache on the server after upload
+          ssh -i ~/.ssh/id_rsa $USER@$HOST "sudo chown -R apache:apache /var/www/html && sudo chmod 664 /var/www/html/data.sqlite && sudo systemctl restart httpd php-fpm"
