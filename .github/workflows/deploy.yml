@@ -1,0 +1,34 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Server
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          HOST: ${{ secrets.EC2_HOST }}
+          USER: ${{ secrets.EC2_USER }}
+        run: |
+          # Set up the SSH key
+          mkdir -p ~/.ssh/
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
+          # Add the server to known hosts to prevent interactive prompts
+          ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
+          
+          # Sync all files to the web directory on the server
+          # Note: --rsync-path="sudo rsync" is used because /var/www/html is owned by apache
+          rsync -avz --exclude='.git' --exclude='.github' -e "ssh -i ~/.ssh/id_rsa" --rsync-path="sudo rsync" ./ $USER@$HOST:/var/www/html/
+          
+          # Ensure correct permissions are set on the server after upload
+          ssh -i ~/.ssh/id_rsa $USER@$HOST "sudo chown -R apache:apache /var/www/html && sudo chmod 664 /var/www/html/data.sqlite"
