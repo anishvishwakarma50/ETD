@@ -16,7 +16,7 @@ $partners = $pdo->query("SELECT * FROM partners ORDER BY display_order ASC, id A
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Outfit:wght@400;600;700;800&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 
 <body>
@@ -490,7 +490,7 @@ $partners = $pdo->query("SELECT * FROM partners ORDER BY display_order ASC, id A
         <div class="footer-watermark">smm-art</div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=2"></script>
 
     <!-- Team Member Modal -->
     <div id="team-modal" class="modal-overlay">
