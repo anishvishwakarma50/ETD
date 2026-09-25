@@ -25,11 +25,14 @@
     box-sizing: border-box;
 }
 
+html, body {
+    overflow-x: hidden;
+}
+
 body {
     font-family: var(--font-main);
     color: var(--color-text-dark);
     line-height: 1.6;
-    overflow-x: hidden;
     background-color: #ffffff;
 }
 
